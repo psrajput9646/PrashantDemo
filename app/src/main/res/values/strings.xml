@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Stocks</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="watch_list">Watchlist</string>
+    <string name="orders">Orders</string>
+    <string name="port_folio">Portfolio</string>
+    <string name="invest">Invest</string>
+    <string name="funds">Funds</string>
+    <string name="current_value">Current value</string>
+    <string name="total_investment">Total investment</string>
+    <string name="today_profit_loss">Today\'s Profit &amp; Losss</string>
+    <string name="profit_loss">Profit &amp; Loss</string>
+    <string name="ltp">LTP</string>
+    <string name="net_qty">Net Qty</string>
+    <string name="p_l">P&amp;L</string>
+    <string name="colon">:</string>
+    <string name="image">Image</string>
+    <string name="decimal">#.##</string>
+
+
+
+</resources>
