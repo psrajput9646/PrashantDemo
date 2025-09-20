@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Stocks</string>
+    <string name="app_name">Prashant Demo</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="watch_list">Watchlist</string>
     <string name="orders">Orders</string>
