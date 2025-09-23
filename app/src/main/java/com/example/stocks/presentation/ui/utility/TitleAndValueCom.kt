@@ -1,5 +1,6 @@
 package com.example.stocks.presentation.ui.utility
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,7 +17,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun TitleAndValue(title:String, value: String, valueColor: Color = Color.Black){
+fun TitleAndValue(
+    title: String,
+    value: String,
+    valueColor: Color = if (isSystemInDarkTheme()) Color.White else Color.Black
+) {
     Row(
         modifier = Modifier
             .wrapContentSize(),
@@ -24,12 +29,18 @@ fun TitleAndValue(title:String, value: String, valueColor: Color = Color.Black){
     ) {
         Text(title, color = Color.Gray)
         Spacer(modifier = Modifier.width(6.dp))
-        Text(value, color = valueColor, fontWeight = FontWeight.Medium, fontSize = 16.sp, fontFamily = FontFamily.SansSerif)
+        Text(
+            value,
+            color = valueColor,
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+            fontFamily = FontFamily.SansSerif
+        )
     }
 }
 
 @Preview
 @Composable
-fun PreviewOfTitleAndValue(){
-    TitleAndValue("LTP : ","₹39399",Color.Red)
+fun PreviewOfTitleAndValue() {
+    TitleAndValue("LTP : ", "₹39399", Color.Red)
 }

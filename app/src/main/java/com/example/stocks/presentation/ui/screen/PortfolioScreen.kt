@@ -1,8 +1,8 @@
 package com.example.stocks.presentation.ui.screen
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,17 +15,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -53,16 +52,12 @@ fun PortfolioScreen(viewModel: InvestedViewModel = hiltViewModel()) {
 
     when (invested) {
         is InvestedUiState.Error -> {
-            val message = (invested as InvestedUiState.Error).message
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = message, color = Color.Red)
-            }
+            ErrorScreen((invested as InvestedUiState.Error).message)
+
         }
 
         is InvestedUiState.Loading -> {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            LoadingScreen()
         }
 
         is InvestedUiState.Success -> {
@@ -75,14 +70,17 @@ fun PortfolioScreen(viewModel: InvestedViewModel = hiltViewModel()) {
                 with(LocalDensity.current) { (sheetHeight - peekHeight).toPx() } to "Expanded"
             )
 
-            val swipeableState = rememberSwipeableState(initialValue = "Collapsed")//AnchoredDraggableState()
+            val swipeableState =
+                rememberSwipeableState(initialValue = "Collapsed")//AnchoredDraggableState()
 
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
                 Column {
-                    LazyColumn(modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(bottom = 80.dp)) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(bottom = 80.dp)
+                    ) {
                         items(items = list) { item ->
                             PortfolioItem(item)
                             Divider()
@@ -97,7 +95,7 @@ fun PortfolioScreen(viewModel: InvestedViewModel = hiltViewModel()) {
                         .align(Alignment.BottomCenter)
                         .offset { IntOffset(0, swipeableState.offset.value.roundToInt()) }
                         .background(
-                            Color.White,
+                            if (isSystemInDarkTheme()) Color.Black else Color.White,
                             shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
                         )
                         .swipeable(
@@ -108,61 +106,10 @@ fun PortfolioScreen(viewModel: InvestedViewModel = hiltViewModel()) {
                         )
                 ) {
                     val state = remember { mutableStateOf(swipeableState.currentValue) }
-                    val currentValue = remember { mutableDoubleStateOf(0.0) }
-                    val totalInvestment = remember { mutableDoubleStateOf(0.0) }
-                    val todayPfAndLs = remember { mutableDoubleStateOf(0.0) }
-                    val pfAndLs = remember { mutableDoubleStateOf(0.0) }
-                    LaunchedEffect(Unit) {
-                        currentValue.doubleValue =
-                            (invested as InvestedUiState.Success<List<UserHolding>>).data.sumOf { (it.ltp * it.quantity) }
-                                .decimalInTwoPlace()
-                        totalInvestment.doubleValue =
-                            (invested as InvestedUiState.Success<List<UserHolding>>).data.sumOf { (it.avgPrice * it.quantity) }
-                                .decimalInTwoPlace()
-                        todayPfAndLs.doubleValue =
-                            (invested as InvestedUiState.Success<List<UserHolding>>).data.sumOf { ((it.close - it.ltp) * it.quantity) }
-                                .decimalInTwoPlace()
-                        pfAndLs.doubleValue =
-                            (currentValue.doubleValue - totalInvestment.doubleValue).decimalInTwoPlace()
-                    }
-
                     LaunchedEffect(swipeableState.currentValue) {
                         state.value = swipeableState.currentValue
                     }
-
-
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        val todayPfLsColor = if (todayPfAndLs.value >= 0) Color.Green else Color.Red
-                        val pfLsColor = if (pfAndLs.doubleValue >= 0) Color.Green else Color.Red
-                        if (state.value == "Collapsed") {
-                            TitleAndValueAsRow(
-                                stringResource(id = R.string.current_value),
-                                currentValue.doubleValue.decimalInString()
-                            ){}
-                            Spacer(modifier = Modifier.height(20.dp))
-                            TitleAndValueAsRow(
-                                stringResource(id = R.string.total_investment),
-                                totalInvestment.doubleValue.decimalInString()
-                            ){}
-                            Spacer(modifier = Modifier.height(20.dp))
-                            TitleAndValueAsRow(
-                                stringResource(id = R.string.today_profit_loss),
-                                todayPfAndLs.doubleValue.decimalInString(),
-                                colorValue = todayPfLsColor
-                            ){}
-                            Spacer(modifier = Modifier.height(14.dp))
-                            Divider()
-                            Spacer(modifier = Modifier.height(14.dp))
-                        }
-                        TitleAndValueAsRow(
-                            stringResource(id = R.string.profit_loss),
-                            pfAndLs.doubleValue.decimalInString(),
-                            true,
-                            pfLsColor
-                        ){}
-                    }
+                    PortfolioSummary(list)
                 }
             }
         }
@@ -170,6 +117,66 @@ fun PortfolioScreen(viewModel: InvestedViewModel = hiltViewModel()) {
 
 }
 
+
+@Composable
+private fun ErrorScreen(message: String) {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(text = message, color = Color.Red)
+    }
+}
+
+@Composable
+private fun LoadingScreen() {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun PortfolioSummary(list: List<UserHolding>) {
+    // calculate values
+    val currentValue = list.sumOf { it.ltp * it.quantity }.decimalInTwoPlace()
+    val totalInvestment = list.sumOf { it.avgPrice * it.quantity }.decimalInTwoPlace()
+    val todayPfAndLs = list.sumOf { (it.close - it.ltp) * it.quantity }.decimalInTwoPlace()
+    val pfAndLs = (currentValue - totalInvestment).decimalInTwoPlace()
+
+    val todayPfLsColor = if (todayPfAndLs >= 0) Color.Green else Color.Red
+    val pfLsColor = if (pfAndLs >= 0) Color.Green else Color.Red
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        TitleAndValueAsRow(
+            title = stringResource(id = R.string.current_value),
+            value = currentValue.decimalInString()
+        ) {}
+        Spacer(Modifier.height(12.dp))
+
+        TitleAndValueAsRow(
+            stringResource(id = R.string.total_investment),
+            totalInvestment.decimalInString()
+        ) {}
+        Spacer(Modifier.height(12.dp))
+
+        TitleAndValueAsRow(
+            stringResource(id = R.string.today_profit_loss),
+            todayPfAndLs.decimalInString(),
+            colorValue = todayPfLsColor
+        ) {}
+        Spacer(Modifier.height(12.dp))
+        Divider()
+        Spacer(Modifier.height(12.dp))
+
+        TitleAndValueAsRow(
+            stringResource(id = R.string.profit_loss),
+            pfAndLs.decimalInString(),
+            status = true,
+            colorValue = pfLsColor
+        ) {}
+    }
+}
 
 
 

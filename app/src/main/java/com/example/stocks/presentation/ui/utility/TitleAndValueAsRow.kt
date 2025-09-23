@@ -1,5 +1,6 @@
 package com.example.stocks.presentation.ui.utility
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,7 +27,7 @@ fun TitleAndValueAsRow(
     title: String,
     value: String,
     status: Boolean = false,
-    colorValue: Color = Color.Black,
+    colorValue: Color = if(isSystemInDarkTheme()) Color.White else Color.Black,
     onArrayClicked: () -> Unit
 ) {
     Row(
