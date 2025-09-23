@@ -15,11 +15,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -83,7 +84,11 @@ fun PortfolioScreen(viewModel: InvestedViewModel = hiltViewModel()) {
                     ) {
                         items(items = list) { item ->
                             PortfolioItem(item)
-                            Divider()
+                            HorizontalDivider(
+                                Modifier,
+                                DividerDefaults.Thickness,
+                                DividerDefaults.color
+                            )
                         }
                     }
                 }
@@ -166,7 +171,7 @@ private fun PortfolioSummary(list: List<UserHolding>) {
             colorValue = todayPfLsColor
         ) {}
         Spacer(Modifier.height(12.dp))
-        Divider()
+        HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
         Spacer(Modifier.height(12.dp))
 
         TitleAndValueAsRow(
