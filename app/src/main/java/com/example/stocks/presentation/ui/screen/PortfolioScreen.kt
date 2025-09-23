@@ -114,7 +114,7 @@ fun PortfolioScreen(viewModel: InvestedViewModel = hiltViewModel()) {
                     LaunchedEffect(swipeableState.currentValue) {
                         state.value = swipeableState.currentValue
                     }
-                    PortfolioSummary(list)
+                    PortfolioSummary(list, state.value)
                 }
             }
         }
@@ -138,7 +138,7 @@ private fun LoadingScreen() {
 }
 
 @Composable
-private fun PortfolioSummary(list: List<UserHolding>) {
+private fun PortfolioSummary(list: List<UserHolding>, state: String) {
     // calculate values
     val currentValue = list.sumOf { it.ltp * it.quantity }.decimalInTwoPlace()
     val totalInvestment = list.sumOf { it.avgPrice * it.quantity }.decimalInTwoPlace()
@@ -153,27 +153,28 @@ private fun PortfolioSummary(list: List<UserHolding>) {
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        TitleAndValueAsRow(
-            title = stringResource(id = R.string.current_value),
-            value = currentValue.decimalInString()
-        ) {}
-        Spacer(Modifier.height(12.dp))
+        if (state == "Collapsed") {
+            TitleAndValueAsRow(
+                title = stringResource(id = R.string.current_value),
+                value = currentValue.decimalInString()
+            ) {}
+            Spacer(Modifier.height(12.dp))
 
-        TitleAndValueAsRow(
-            stringResource(id = R.string.total_investment),
-            totalInvestment.decimalInString()
-        ) {}
-        Spacer(Modifier.height(12.dp))
+            TitleAndValueAsRow(
+                stringResource(id = R.string.total_investment),
+                totalInvestment.decimalInString()
+            ) {}
+            Spacer(Modifier.height(12.dp))
 
-        TitleAndValueAsRow(
-            stringResource(id = R.string.today_profit_loss),
-            todayPfAndLs.decimalInString(),
-            colorValue = todayPfLsColor
-        ) {}
-        Spacer(Modifier.height(12.dp))
-        HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
-        Spacer(Modifier.height(12.dp))
-
+            TitleAndValueAsRow(
+                stringResource(id = R.string.today_profit_loss),
+                todayPfAndLs.decimalInString(),
+                colorValue = todayPfLsColor
+            ) {}
+            Spacer(Modifier.height(12.dp))
+            HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
+            Spacer(Modifier.height(12.dp))
+        }
         TitleAndValueAsRow(
             stringResource(id = R.string.profit_loss),
             pfAndLs.decimalInString(),

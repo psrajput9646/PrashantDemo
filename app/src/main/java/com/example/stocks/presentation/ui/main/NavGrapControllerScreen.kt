@@ -15,7 +15,7 @@ import com.example.stocks.presentation.ui.utility.Screen
 fun NavGraphControllerScreen(navController: NavHostController, route: String) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Portfolio.route,
+        startDestination = route,
     ) {
         composable(Screen.Portfolio.route) { PortfolioScreen() }
         composable(Screen.WatchList.route) { WatchListScreen() }
