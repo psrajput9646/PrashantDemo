@@ -50,6 +50,7 @@ import kotlin.math.roundToInt
 @Composable
 fun PortfolioScreen(viewModel: InvestedViewModel = hiltViewModel()) {
     val invested by viewModel.invested.collectAsState()
+   // val invested by viewModel.investedUiState.collectAsState()
 
     when (invested) {
         is InvestedUiState.Error -> {

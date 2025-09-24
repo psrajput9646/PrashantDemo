@@ -17,7 +17,7 @@ class InvestedRepositoryImpl @Inject constructor(
     private val dao: InvestedDao
 ) : InvestedRepository {
 
-    override suspend fun getInvestedList(): Flow<InvestedUiState<List<UserHolding>>> = flow {
+    override fun getInvestedList(): Flow<InvestedUiState<List<UserHolding>>> = flow {
         emit(InvestedUiState.Loading)
 
         try {
